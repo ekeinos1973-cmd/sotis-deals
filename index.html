@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sotis Deals – Produktempfehlungen für Deutschland</title>
+<meta name="description" content="Praktische Produktempfehlungen für Zuhause, Technik und Reisen.">
+<style>
+:root{font-family:system-ui,-apple-system,Arial,sans-serif;color:#14243a;background:#f4f7fb}
+*{box-sizing:border-box}body{margin:0}header{background:#10243c;color:#fff;padding:34px 22px}
+.wrap{max-width:1050px;margin:auto}h1{margin:0;font-size:34px}h1 span{color:#72e4bd}
+header p{color:#d8e4f3;max-width:650px}main{padding:26px 20px}
+input{width:100%;padding:15px;font:inherit;border:1px solid #cbd5e1;border-radius:10px}
+.filters{display:flex;flex-wrap:wrap;gap:9px;margin:22px 0}
+.filters button{padding:9px 16px;border:1px solid #cbd5e1;background:#fff;border-radius:25px;cursor:pointer}
+.filters button.active{background:#10243c;color:white}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px}
+.card{border-radius:15px;background:white;overflow:hidden;border:1px solid #dfe6ee}
+.visual{height:160px;display:grid;place-items:center;background:#eaf2f8;font-size:72px}
+.card-body{padding:18px}.tag{font-size:12px;color:#59687b;letter-spacing:.05em;text-transform:uppercase}
+.card h2{font-size:19px;margin:10px 0}.card p{color:#566579;min-height:48px}
+.link{display:block;text-align:center;background:#087964;color:white;font-weight:700;border-radius:8px;padding:12px;text-decoration:none}
+.link.disabled{background:#e1e7ee;color:#64748b;pointer-events:none}
+.notice{background:#fff;padding:18px;margin:28px 0 0;border-radius:12px;color:#415166;font-size:14px}
+footer{padding:23px 20px;color:#59687b;font-size:14px}
+footer a{margin-right:16px;color:#14243a}
+</style></head>
+<body>
+<header><div class="wrap"><h1>Sotis <span>Deals</span></h1><h2>Clever entdecken. Besser einkaufen.</h2><p>Unsere Empfehlungen für Alltag, Technik, Zuhause und Reisen.</p></div></header>
+<main class="wrap">
+<input id="search" type="search" aria-label="Produkte suchen" placeholder="Produkte suchen …">
+<nav class="filters" id="filters" aria-label="Produktkategorien"></nav>
+<section class="grid" id="products" aria-label="Produktempfehlungen"></section>
+<div class="notice"><strong>Transparenz:</strong> Werbung / Affiliate-Links. Bei qualifizierten Käufen über gekennzeichnete Links können wir eine Provision erhalten. Für dich entstehen dadurch keine zusätzlichen Kosten.<p><strong>Hinweis:</strong> Diese Website befindet sich im Aufbau. Impressum und Datenschutzerklärung müssen vor kommerzieller Nutzung vollständig und zutreffend ergänzt werden.</p></div>
+</main>
+<footer class="wrap"><a href="impressum.html">Impressum</a><a href="datenschutz.html">Datenschutz</a><p>© <span id="year"></span> Sotis Deals</p></footer>
+<script src="products.js"></script>
+<script>
+const search=document.querySelector("#search"),filters=document.querySelector("#filters"),grid=document.querySelector("#products");
+let selected="Alle";
+const categories=["Alle",...new Set(PRODUCTS.map(p=>p.category))];
+function render(){
+filters.replaceChildren();
+categories.forEach(c=>{const b=document.createElement("button");b.textContent=c;b.className=c===selected?"active":"";b.addEventListener("click",()=>{selected=c;render()});filters.append(b)});
+grid.replaceChildren();
+PRODUCTS.filter(p=>(selected==="Alle"||selected===p.category)&&(p.name+" "+p.description).toLowerCase().includes(search.value.toLowerCase())).forEach(p=>{
+const article=document.createElement("article");article.className="card";
+const visual=document.createElement("div");visual.className="visual";visual.textContent=p.emoji;
+const body=document.createElement("div");body.className="card-body";
+const tag=document.createElement("div");tag.className="tag";tag.textContent=p.category;
+const heading=document.createElement("h2");heading.textContent=p.name;
+const desc=document.createElement("p");desc.textContent=p.description;
+const link=document.createElement("a");link.textContent="Angebot folgt";link.className="link disabled";
+if(p.url){try{const url=new URL(p.url);if(url.protocol==="https:"){link.href=url.toString();link.target="_blank";link.rel="sponsored nofollow noopener noreferrer";link.textContent="Zum Angebot ↗";link.className="link"}}catch(e){}}
+body.append(tag,heading,desc,link);article.append(visual,body);grid.append(article);
+});
+}
+search.addEventListener("input",render);document.querySelector("#year").textContent=new Date().getFullYear();render();
+</script></body></html>
